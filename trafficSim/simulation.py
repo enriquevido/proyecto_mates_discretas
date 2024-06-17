@@ -5,18 +5,20 @@ from .traffic_signal import TrafficSignal
 import csv
 
 class Simulation:
-    vehiclesPassed = 0;
-    vehiclesPresent = 0;
-    vehicleRate = 0;
-    isPaused = False;
+    vehiclesPassed = 0
+    vehiclesPresent = 0
+    vehicleRate = 0
+    isPaused = False
 
-    def __init__(self, config={}):
+    def __init__(self, config={}, disable_curve_roads=[]):
         # Set default configuration
         self.set_default_config()
 
         # Update configuration
         for attr, val in config.items():
             setattr(self, attr, val)
+
+        self.disable_curve_roads = disable_curve_roads
 
     def set_default_config(self):
         self.t = 0.0            # Time keeping
@@ -42,13 +44,16 @@ class Simulation:
         Simulation.vehicleRate = gen.vehicle_rate
         return gen
 
-    def create_signal(self, roads, config={}):
+    def create_signal(self, roads, config={}, wait_times=None):
         roads = [[self.roads[i] for i in road_group] for road_group in roads]
-        sig = TrafficSignal(roads, config)
+        sig = TrafficSignal(roads, config, wait_times)
         self.traffic_signals.append(sig)
         return sig
 
     def update(self):
+        if self.isPaused:
+            return
+        
         # Update every road
         for road in self.roads:
             road.update(self.dt)
@@ -81,12 +86,7 @@ class Simulation:
                 else:
                     Simulation.vehiclesPassed += 1
                 # In all cases, remove it from its road
-                road.vehicles.popleft() 
-
-                # if vehicle reached the end of the path
-                # if vehicle.current_road_index + 1 == len(vehicle.path):
-                #     Simulation.vehiclesPassed += 1
-                    # print("Vehicle passed: " + str(Simulation.vehiclesPassed))
+                road.vehicles.popleft()
 
         # Check for the number of vehicles present
         Simulation.vehiclesPresent = 0
@@ -98,7 +98,7 @@ class Simulation:
         self.frame_count += 1
 
         # Stop at certain time in seconds (for sampling purposes. Comment out if not needed)
-        self.time_limit = 300
+        self.time_limit = 150
         if self.t >= self.time_limit:
             print("Traffic Signal Cycle Length: " + str(self.traffic_signals[0].cycle_length))
             print("Time: " + str(self.t))
@@ -115,7 +115,8 @@ class Simulation:
 
             # Reset time and vehicles passed
             self.t = 0.001
-            gen.delete_all_vehicles()
+            for gen in self.generators:
+                gen.delete_all_vehicles()
             Simulation.vehiclesPassed = 0
             Simulation.vehiclesPresent = 0
             self.iteration += 1
@@ -123,7 +124,6 @@ class Simulation:
                 # Set all traffic signals to +1
                 for signal in self.traffic_signals:
                     signal.cycle_length += 1
-
 
     def run(self, steps):
         for _ in range(steps):

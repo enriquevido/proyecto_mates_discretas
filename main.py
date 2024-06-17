@@ -11,7 +11,7 @@ b = 15      # Indicates point b
 l = 150     # Length of road
 
 NUM_OF_ROADS = 36 # Number of roads
-VEHICLE_RATE = 100 # Vehicle spawn rate per minute
+VEHICLE_RATE = 200 # Vehicle spawn rate per minute
 STEPS_PER_UPDATE = 1   # Number of steps per update
 
 # Nodes
@@ -27,17 +27,17 @@ EAST_LEFT_START = (-b-l, a)
 NORTH_RIGHT_START = (-a, b+l)
 NORTH_LEFT_START = (a, b+l)
 
-WEST_RIGHT = (-b, a)
-WEST_LEFT =	(-b, -a)
+WEST_RIGHT = (b, a)
+WEST_LEFT =	(b, -a)
 
-SOUTH_RIGHT = (a, b)
-SOUTH_LEFT = (-a, b)
+SOUTH_RIGHT = (a, -b)
+SOUTH_LEFT = (-a, -b)
 
-EAST_RIGHT = (b, -a)
-EAST_LEFT = (b, a)
+EAST_RIGHT = (-b, -a)
+EAST_LEFT = (-b, a)
 
-NORTH_RIGHT = (-a, -b)
-NORTH_LEFT = (a, -b)
+NORTH_RIGHT = (-a, b)
+NORTH_LEFT = (a, b)
 
 # Create Nodes with offset to avoid overlapping
 WEST_RIGHT_START2 = (WEST_RIGHT_START[0], WEST_RIGHT_START[1] - 4)
@@ -268,33 +268,33 @@ sim.create_gen({
 'vehicles':[
     # 1st Lane
     [2, {'path': [0, 8, 6]}],
-    [2, {'path': [0, *road(NUM_OF_ROADS), 5]}],
+    # [2, {'path': [0, *road(NUM_OF_ROADS), 5]}],
     # [2, {'path': [0, *road(24+n), 7]}],
 
     [2, {'path': [1, 9, 7]}],
-    [2, {'path': [1, *road(NUM_OF_ROADS+2*n), 6]}],
+    # [2, {'path': [1, *road(NUM_OF_ROADS+2*n), 6]}],
     # [1, {'path': [1, *road(24+3*n), 4]}],
 
     [3, {'path': [2, 10, 4]}],
-    [3, {'path': [2, *road(NUM_OF_ROADS+4*n), 7]}],
+    # [3, {'path': [2, *road(NUM_OF_ROADS+4*n), 7]}],
     # [1, {'path': [2, *road(24+5*n), 5]}],
 
     [3, {'path': [3, 11, 5]}],
-    [3, {'path': [3, *road(NUM_OF_ROADS+6*n), 4]}],
+    # [3, {'path': [3, *road(NUM_OF_ROADS+6*n), 4]}],
     # [2, {'path': [3, *road(24+7*n), 6]}],
 
     # 2nd Lane
     [2, {'path': [12, 20, 18]}],
     # [2, {'path': [12, *road(24+8*n), 17]}],
-    [2, {'path': [12, *road(NUM_OF_ROADS+9*n), 19]}],
+    # [2, {'path': [12, *road(NUM_OF_ROADS+9*n), 19]}],
 
     [2, {'path': [13, 21, 19]}],
     # [2, {'path': [13, *road(24+10*n), 18]}],
-    [2, {'path': [13, *road(NUM_OF_ROADS+11*n), 16]}],
+    # [2, {'path': [13, *road(NUM_OF_ROADS+11*n), 16]}],
 
     [3, {'path': [14, 22, 16]}],
     # [2, {'path': [14, *road(24+12*n), 19]}],
-    [3, {'path': [14, *road(NUM_OF_ROADS+13*n), 17]}],
+    # [3, {'path': [14, *road(NUM_OF_ROADS+13*n), 17]}],
 
     [3, {'path': [15, 23, 17]}],
     # [2, {'path': [15, *road(24+14*n), 16]}],
@@ -302,32 +302,29 @@ sim.create_gen({
 
 
     # 3rd Lane (no red light/turn left only)
-    # [3, {'path': [24, 32, 30]}],
-    # [2, {'path': [24, *road(NUM_OF_ROADS+16*n), 29]}],
-    [3, {'path': [24, *road(NUM_OF_ROADS+17*n), 31]}],
+    [3, {'path': [24, 32, 30]}],
+    [2, {'path': [24, *road(NUM_OF_ROADS+16*n), 29]}],
+    # [3, {'path': [24, *road(NUM_OF_ROADS+17*n), 31]}],
 
     # [3, {'path': [25, 33, 31]}],
-    # [2, {'path': [25, *road(NUM_OF_ROADS+18*n), 30]}],
-    [3, {'path': [25, *road(NUM_OF_ROADS+19*n), 28]}],
+    [2, {'path': [25, *road(NUM_OF_ROADS+18*n), 30]}],
+    # [3, {'path': [25, *road(NUM_OF_ROADS+19*n), 28]}],
 
-    # [3, {'path': [26, 34, 28]}],
-    # [2, {'path': [26, *road(NUM_OF_ROADS+20*n), 31]}],
-    [4, {'path': [26, *road(NUM_OF_ROADS+21*n), 29]}],
+    [3, {'path': [26, 34, 28]}],
+    [2, {'path': [26, *road(NUM_OF_ROADS+20*n), 31]}],
+    # [4, {'path': [26, *road(NUM_OF_ROADS+21*n), 29]}],
 
     # [3, {'path': [27, 35, 29]}],
-    # [2, {'path': [27, *road(NUM_OF_ROADS+22*n), 28]}],
-    [4, {'path': [27, *road(NUM_OF_ROADS+23*n), 30]}]
+    [2, {'path': [27, *road(NUM_OF_ROADS+22*n), 28]}],
+    #[4, {'path': [27, *road(NUM_OF_ROADS+23*n), 30]}]
 
 ]})
 
-sim.create_signal([[0], [1], [2], [3]])
-sim.create_signal([[12], [13], [14], [15]])
+wait_times = [22, 34, 22, 34]
 
-# Create Green Light for 3rd Lane
-sim.create_signal([[24]])
-sim.create_signal([[25]])
-sim.create_signal([[26]])
-sim.create_signal([[27]])
+sim.create_signal([[0], [1], [2], [3]], wait_times=wait_times)
+sim.create_signal([[12], [13], [14], [15]], wait_times=wait_times)
+sim.create_signal([[24], [25], [26], [27]], wait_times=wait_times)
 
 # Start simulation
 win = Window(sim)

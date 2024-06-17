@@ -20,6 +20,7 @@ def curve_road(start, end, control, resolution=15):
 
 TURN_LEFT = 1
 TURN_RIGHT = 0
+	
 def turn_road(start, end, turn_direction, resolution=15):
 	# Get control point
 	x = min(start[0], end[0])
